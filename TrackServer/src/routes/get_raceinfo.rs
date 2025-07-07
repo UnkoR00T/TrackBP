@@ -1,0 +1,38 @@
+use std::ffi::CStr;
+use rocket::get;
+use rocket::http::Status;
+use rocket::response::status;
+use rocket::serde::json::Json;
+use serde_json::Value;
+use crate::GET_RACEINFO;
+
+#[get("/get_raceinfo")]
+pub fn call_get_raceinfo() -> Result<status::Custom<Json<Value>>, status::Custom<String>> {
+    unsafe {
+        if let Some(cb) = GET_RACEINFO {
+            let ptr = cb();
+            if !ptr.is_null() {
+                // Parsing CStr back to &str and to json.
+                // JSON to JSON, smart.
+                let c_str = CStr::from_ptr(ptr);
+                if let Ok(json) = c_str.to_str() {
+                    match serde_json::from_str::<serde_json::Value>(json) {
+                        Ok(val) => Ok(status::Custom(Status::Ok, Json(val))),
+                        Err(_) => {
+                            println!("Failed to parse json");
+                            Err(status::Custom(Status::InternalServerError, String::from("Invalid JSON")))
+                        }
+                    }
+                }else{
+                    Err(status::Custom(Status::InternalServerError, String::from("Couldn't receive c_str")))
+                }
+            }else{
+                Err(status::Custom(Status::InternalServerError, String::from("Failed to load pointer")))
+            }
+        } else {
+            // If you are getting this error there is problem in c# not here <3.
+            println!("No callback fn");
+            Err(status::Custom(Status::InternalServerError, String::from("No callback fn")))
+        }
+    }
+}

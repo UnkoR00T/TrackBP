@@ -52,6 +52,17 @@ pub extern "C" fn register_get_players(cb: GetPlayersFn) {
     }
 }
 
+// Get RaceInfo data binding
+type GetRaceInfoFn = extern "C" fn() -> *const c_char;
+static mut GET_RACEINFO: Option<GetPlayersFn> = None;
+#[unsafe(no_mangle)]
+pub extern "C" fn register_get_raceinfo(cb: GetRaceInfoFn) {
+    unsafe {
+        println!("Registered getRaceInfo");
+        GET_RACEINFO = Some(cb);
+    }
+}
+
 #[unsafe(no_mangle)]
 /// Extern function for c# to broadcast messages to clients look ws.rs.
 pub extern "C" fn send_message(json_ptr: *const c_char) {
