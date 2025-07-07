@@ -22,4 +22,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: trackserver-binary
-        path: TrackServer/target/release/your-binary-name-here
+        path: TrackServer/target/release/*.so
