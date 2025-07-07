@@ -28,13 +28,13 @@ namespace TrackSystem.DBControllers
             {
                 best.PlayerName = player.username;
                 personalBestCollection.Insert(best);
-                SendPlayerUpdate.Exec(player);
+                WSUtils.SendPlayerUpdate(player);
             }
             if (best.LapTime > time)
             {
                 best.LapTime = time;
                 personalBestCollection.Update(best);
-                SendPlayerUpdate.Exec(player);
+                WSUtils.SendPlayerUpdate(player);
             }
         }
         public static void UpdateSectorTime(ShPlayer player, double time, int sector)
@@ -61,7 +61,7 @@ namespace TrackSystem.DBControllers
                 if (best.Sectors.Three > time) best.Sectors.Three = time;
             }
             personalBestCollection.Update(best);
-            SendPlayerUpdate.Exec(player);
+            WSUtils.SendPlayerUpdate(player);
         }
         public static void UpdateTimeTrap(ShPlayer player, float time)
         {
@@ -73,14 +73,14 @@ namespace TrackSystem.DBControllers
             {
                 best.PlayerName = player.username;
                 personalBestCollection.Insert(best);
-                SendPlayerUpdate.Exec(player);
+                WSUtils.SendPlayerUpdate(player);
 
             }
             if (best.TimeTrap < time)
             {
                 best.TimeTrap = time;
                 personalBestCollection.Update(best);
-                SendPlayerUpdate.Exec(player);
+                WSUtils.SendPlayerUpdate(player);
             }
         }
 
@@ -91,6 +91,10 @@ namespace TrackSystem.DBControllers
             if (_best != null)
                 best = _best;
             return best;
+        }
+        public static void Clear()
+        {
+            personalBestCollection.DeleteAll();
         }
     }
 }

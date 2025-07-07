@@ -14,7 +14,7 @@ namespace TrackSystem.Functions
             if (sender.svPlayer.HasPermission("admin"))
             {
                 target.svPlayer.CustomData.Add("driverNumber", number);
-                SendPlayerUpdate.Exec(target);
+                WSUtils.SendPlayerUpdate(target);
                 sender.svPlayer.SendGameMessage($"&c[RACE] &fPlayer's number has been set to {number}");
                 target.svPlayer.SendGameMessage($"&c[RACE] &fYours number has been set to {number} by {sender.username}");
             }

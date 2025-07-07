@@ -37,9 +37,26 @@ namespace TrackSystem
             return unmanaged;
         }
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate IntPtr GetRaceInfoDelegate();
+        [DllImport("TrackServer.so", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void register_get_raceinfo(GetRaceInfoDelegate del);
+
+
+        public static IntPtr GetRaceInfoImpl()
+        {
+            RaceInfoModel data = RaceInfoController.Get();
+            string json = JsonConvert.SerializeObject(data);
+            byte[] bytes = Encoding.UTF8.GetBytes(json + "\0");
+            IntPtr unmanaged = Marshal.AllocHGlobal(bytes.Length);
+            Marshal.Copy(bytes, 0, unmanaged, bytes.Length);
+            return unmanaged;
+        }
+
         public static void Init()
         {
             register_get_players(GetPlayersImpl);
+            register_get_raceinfo(GetRaceInfoImpl);
         }
     }
 }

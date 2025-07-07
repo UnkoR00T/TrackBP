@@ -1,6 +1,7 @@
 ﻿using BrokeProtocol.API;
 using BrokeProtocol.Entities;
 using BrokeProtocol.Properties;
+using BrokeProtocol.Utility;
 using RSG;
 using System;
 using System.Collections;
@@ -43,38 +44,17 @@ namespace TrackSystem.Events
                     if(sector == 1)
                     {
                         var sectorDiff = realTime - best.Sectors.One;
-                        if(sectorDiff >= -100)
-                        {
-                            string sign = sectorDiff > 0 ? "+" : (sectorDiff < 0 ? "-" : "");
-                            string text = $"{sign}{Math.Abs(sectorDiff):F3}";
-                            player.svPlayer.SetTextElementText("TimeDiff", text + "s");
-                            player.svPlayer.StartCoroutine(hideDiff(player));
-
-                        }
+                        showDiff(player, sectorDiff);
                     }
                     if (sector == 2)
                     {
                         var sectorDiff = realTime - best.Sectors.Two;
-                        if (sectorDiff >= -100)
-                        {
-                            string sign = sectorDiff > 0 ? "+" : (sectorDiff < 0 ? "-" : "");
-                            string text = $"{sign}{Math.Abs(sectorDiff):F3}";
-                            player.svPlayer.SetTextElementText("TimeDiff", text + "s");
-                            player.svPlayer.StartCoroutine(hideDiff(player));
-
-                        }
+                        showDiff(player, sectorDiff);
                     }
                     if (sector == 3)
                     {
                         var sectorDiff = realTime - best.Sectors.Three;
-                        if (sectorDiff >= -100)
-                        {
-                            string sign = sectorDiff > 0 ? "+" : (sectorDiff < 0 ? "-" : "");
-                            string text = $"{sign}{Math.Abs(sectorDiff):F3}";
-                            player.svPlayer.SetTextElementText("TimeDiff", text + "s");
-                            player.svPlayer.StartCoroutine(hideDiff(player));
-
-                        }
+                        showDiff(player, sectorDiff);
                     }
                     PersonalBestController.UpdateSectorTime(player, realTime, sector);
                     SectorController.SetSectorTime(player, sector, realTime);
@@ -82,35 +62,67 @@ namespace TrackSystem.Events
 
                 if (sector == 1)
                 {
-                    if (player.svPlayer.CustomData.TryGetValue<double>($"enteredSector{sector}", out double lapTime))
-                    {
-                        double realTime = nowTime - lapTime;
-                        player.svPlayer.SendGameMessage($"===== LAP-TIME: {realTime} =====");
-                        PersonalBestModel best = PersonalBestController.GetPersonalBests(player);
-                        var sectorDiff = realTime - best.LapTime;
-
-
-                        Console.WriteLine($"[DEBUG] realTime: {realTime}");
-                        Console.WriteLine($"[DEBUG] best lapTime: {best.LapTime}");
-                        Console.WriteLine($"[DEBUG] realTime - best.LapTime = {realTime - best.LapTime}");
-
-                        if(sectorDiff >= -100)
-                        {
-                            string sign = sectorDiff > 0 ? "+" : (sectorDiff < 0 ? "-" : "");
-                            string text = $"{sign}{Math.Abs(sectorDiff):F3}";
-                            player.svPlayer.SetTextElementText("TimeDiff", text + "s");
-                            player.svPlayer.StartCoroutine(hideDiff(player));
-
-                        }
-                        SectorController.SetLapTime(player, realTime);
-                        PersonalBestController.UpdateLapTime(player, realTime);
-                    }
+                    Lap(player);
                 }
                 player.svPlayer.VisualElementDisplay("TimeDiff", true);
 
                 player.svPlayer.CustomData.Add<double>($"enteredSector{sector}", nowTime);
+                player.svPlayer.CustomData.Add<double>($"lastSector", sector);
                 player.svPlayer.SendGameMessage($"===== SAVED =====");
 
+            }
+        }
+        public void showDiff(ShPlayer player, double sectorDiff)
+        {
+            if (sectorDiff >= -100)
+            {
+                string sign = sectorDiff > 0 ? "+" : (sectorDiff < 0 ? "-" : "");
+                string text = $"{sign}{Math.Abs(sectorDiff):F3}";
+                player.svPlayer.SetTextElementText("TimeDiff", text + "s");
+                player.svPlayer.StartCoroutine(hideDiff(player));
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        public void Lap(ShPlayer player)
+        {
+            int lastSector;
+            if (!player.svPlayer.CustomData.TryGetValue<int>("lastSector", out lastSector))
+            {
+                return;
+            }
+            if (lastSector != 3)
+            {
+                player.svPlayer.SendGameMessage("&c[RACE] &fCheating isnt ok :/");
+                return;
+            }
+            if (player.svPlayer.CustomData.TryGetValue<double>($"enteredSector1", out double lapTime))
+            {
+                DateTime now = DateTime.Now;
+                double nowTime = Time.DateTimeToDouble(now);
+                double realTime = nowTime - lapTime;
+                player.svPlayer.SendGameMessage($"===== LAP-TIME: {realTime} =====");
+                PersonalBestModel best = PersonalBestController.GetPersonalBests(player);
+                var sectorDiff = realTime - best.LapTime;
+
+
+                Console.WriteLine($"[DEBUG] realTime: {realTime}");
+                Console.WriteLine($"[DEBUG] best lapTime: {best.LapTime}");
+                Console.WriteLine($"[DEBUG] realTime - best.LapTime = {realTime - best.LapTime}");
+
+                if (sectorDiff >= -100)
+                {
+                    string sign = sectorDiff > 0 ? "+" : (sectorDiff < 0 ? "-" : "");
+                    string text = $"{sign}{Math.Abs(sectorDiff):F3}";
+                    player.svPlayer.SetTextElementText("TimeDiff", text + "s");
+                    player.svPlayer.StartCoroutine(hideDiff(player));
+
+                }
+                SectorController.SetLapTime(player, realTime);
+                PersonalBestController.UpdateLapTime(player, realTime);
             }
         }
 
@@ -135,7 +147,7 @@ namespace TrackSystem.Events
         [CustomTarget]
         public void DRSZoneEnter(Serialized trigger, ShPhysical physical)
         {
-            if(physical is ShPlayer player)
+            if(physical is ShPlayer player && RaceInfoController.Get().DRS)
             {
                 player.svPlayer.VisualElementDisplay("DRSText", true);
             }

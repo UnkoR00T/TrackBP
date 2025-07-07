@@ -14,7 +14,7 @@ namespace TrackSystem.Functions
             if (sender.svPlayer.HasPermission("admin"))
             {
                 target.svPlayer.CustomData.Add("driverColor", color);
-                SendPlayerUpdate.Exec(target);
+                WSUtils.SendPlayerUpdate(target);
                 sender.svPlayer.SendGameMessage($"&c[RACE] &fPlayer's color has been set to #{color}");
                 target.svPlayer.SendGameMessage($"&c[RACE] &fYours color has been set to #{color} by {sender.username}");
             }
