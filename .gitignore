@@ -4,3 +4,5 @@
 /TrackSystem/obj
 **/.vs
 
+/TrackSite/node_modules
+/TrackSite/.vscode
