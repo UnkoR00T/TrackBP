@@ -12,6 +12,7 @@ use rocket::response::status;
 use serde_json::{json, Value};
 use crate::cors::{preflight_cors, CORS};
 use crate::routes::get_players::call_get_players;
+use crate::routes::get_raceinfo::call_get_raceinfo;
 use crate::routes::ws::{broadcast_message, ws_compose};
 
 fn build_rocket() -> Rocket<Build> {
@@ -27,7 +28,7 @@ fn build_rocket() -> Rocket<Build> {
     rocket::custom(config)
         .attach(CORS)
         .mount("/",
-               routes![preflight_cors, call_get_players, ws_compose])
+               routes![preflight_cors, call_get_players, call_get_raceinfo, ws_compose])
 }
 
 #[unsafe(no_mangle)]
