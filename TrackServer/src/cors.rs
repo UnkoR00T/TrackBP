@@ -19,6 +19,7 @@ impl Fairing for CORS {
     }
 }
 #[options("/<_..>")]
+// Preflight cors (FUCK CORS)
 pub fn preflight_cors() -> Status {
     Status::Ok
 }

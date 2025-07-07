@@ -15,14 +15,15 @@ use crate::routes::get_players::call_get_players;
 use crate::routes::ws::{broadcast_message, ws_compose};
 
 fn build_rocket() -> Rocket<Build> {
-    let file = fs::read_to_string("settings.json").expect("file not found");
+    // Reading BP settings.json and parsing it to JSON
+    let file = fs::read_to_string("settings.json").expect("File not found, cannot bind to port!");
     let json: Value = json5::from_str(&file).unwrap();
-
     let config = Config {
         address: "0.0.0.0".parse().unwrap(),
         port: json.get("port").unwrap().as_i64().unwrap() as u16,
         ..Config::default()
     };
+    // Main Rocket router
     rocket::custom(config)
         .attach(CORS)
         .mount("/",
@@ -30,29 +31,32 @@ fn build_rocket() -> Rocket<Build> {
 }
 
 #[unsafe(no_mangle)]
+/// Main lib function.
 pub extern "C" fn init_server() {
     thread::spawn(|| {
-        println!("[Rocket] Setting up...");
+        println!("Setting up rocket server...");
         let _ = rocket::async_main(async {
-            build_rocket().launch().await.expect("Rocket wyjebał się");
+            build_rocket().launch().await.expect("Rocket went crazy :thumbs up:");
         });
     });
 }
 
+// Get Players data binding
 type GetPlayersFn = extern "C" fn() -> *const c_char;
 static mut GET_PLAYERS: Option<GetPlayersFn> = None;
 #[unsafe(no_mangle)]
 pub extern "C" fn register_get_players(cb: GetPlayersFn) {
     unsafe {
-        println!("[Rust] Registered function GetPlayers");
+        println!("Registered getPlayersFunction");
         GET_PLAYERS = Some(cb);
     }
 }
 
 #[unsafe(no_mangle)]
+/// Extern function for c# to broadcast messages to clients look ws.rs.
 pub extern "C" fn send_message(json_ptr: *const c_char) {
-    println!("Got message");
     if json_ptr.is_null() {
+        // In case of empty message
         eprintln!("Empty json pointer.");
         return;
     }

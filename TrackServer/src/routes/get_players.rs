@@ -12,9 +12,10 @@ pub fn call_get_players() -> Result<status::Custom<Json<Value>>, status::Custom<
         if let Some(cb) = GET_PLAYERS {
             let ptr = cb();
             if !ptr.is_null() {
+                // Parsing CStr back to &str and to json.
+                // JSON to JSON, smart.
                 let c_str = CStr::from_ptr(ptr);
                 if let Ok(json) = c_str.to_str() {
-                    println!("[Rust] JSON from C#: {}", json);
                     match serde_json::from_str::<serde_json::Value>(json) {
                         Ok(val) => Ok(status::Custom(Status::Ok, Json(val))),
                         Err(_) => {
@@ -29,6 +30,7 @@ pub fn call_get_players() -> Result<status::Custom<Json<Value>>, status::Custom<
                 Err(status::Custom(Status::InternalServerError, String::from("Failed to load pointer")))
             }
         } else {
+            // If you are getting this error there is problem in c# not here <3.
             println!("No callback fn");
             Err(status::Custom(Status::InternalServerError, String::from("No callback fn")))
         }
