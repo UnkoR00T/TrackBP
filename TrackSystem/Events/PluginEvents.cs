@@ -34,40 +34,42 @@ namespace TrackSystem.Events
                 int sector = Int32.Parse(data);
                 player.svPlayer.SendGameMessage($"===== SECTOR {sector} =====");
                 player.svPlayer.SendGameMessage($"===== ENTERD: {nowTime} =====");
-                int lastsector = sector == 1 ? 3 : sector - 1;
-                if (player.svPlayer.CustomData.TryGetValue<double>($"enteredSector{lastsector}", out double time))
+                if (player.svPlayer.CustomData.TryGetValue<int>("lastSector", out int lastSector))
                 {
-                    double realTime = nowTime - time;
-                    player.svPlayer.SendGameMessage($"===== LAST: {time} =====");
-                    player.svPlayer.SendGameMessage($"===== DIFF: {realTime} =====");
-                    PersonalBestModel best = PersonalBestController.GetPersonalBests(player);
-                    if(sector == 1)
+                    if (player.svPlayer.CustomData.TryGetValue<double>($"enteredSector{lastSector}", out double time))
                     {
-                        var sectorDiff = realTime - best.Sectors.One;
-                        showDiff(player, sectorDiff);
+                        double realTime = nowTime - time;
+                        player.svPlayer.SendGameMessage($"===== LAST: {time} =====");
+                        player.svPlayer.SendGameMessage($"===== DIFF: {realTime} =====");
+                        PersonalBestModel best = PersonalBestController.GetPersonalBests(player);
+                        if (sector == 1 && lastSector == 3)
+                        {
+                            var sectorDiff = realTime - best.Sectors.One;
+                            showDiff(player, sectorDiff);
+                        }
+                        if (sector == 2 && lastSector == 1)
+                        {
+                            var sectorDiff = realTime - best.Sectors.Two;
+                            showDiff(player, sectorDiff);
+                        }
+                        if (sector == 3 && lastSector == 2)
+                        {
+                            var sectorDiff = realTime - best.Sectors.Three;
+                            showDiff(player, sectorDiff);
+                        }
+                        PersonalBestController.UpdateSectorTime(player, realTime, sector);
+                        SectorController.SetSectorTime(player, sector, realTime);
                     }
-                    if (sector == 2)
-                    {
-                        var sectorDiff = realTime - best.Sectors.Two;
-                        showDiff(player, sectorDiff);
-                    }
-                    if (sector == 3)
-                    {
-                        var sectorDiff = realTime - best.Sectors.Three;
-                        showDiff(player, sectorDiff);
-                    }
-                    PersonalBestController.UpdateSectorTime(player, realTime, sector);
-                    SectorController.SetSectorTime(player, sector, realTime);
-                }
 
-                if (sector == 1)
-                {
-                    Lap(player);
+                    if (sector == 1 && lastSector == 3)
+                    {
+                        Lap(player);
+                    }
                 }
                 player.svPlayer.VisualElementDisplay("TimeDiff", true);
 
                 player.svPlayer.CustomData.Add<double>($"enteredSector{sector}", nowTime);
-                player.svPlayer.CustomData.Add<double>($"lastSector", sector);
+                player.svPlayer.CustomData.Add<int>($"lastSector", sector);
                 player.svPlayer.SendGameMessage($"===== SAVED =====");
 
             }
@@ -89,16 +91,6 @@ namespace TrackSystem.Events
 
         public void Lap(ShPlayer player)
         {
-            int lastSector;
-            if (!player.svPlayer.CustomData.TryGetValue<int>("lastSector", out lastSector))
-            {
-                return;
-            }
-            if (lastSector != 3)
-            {
-                player.svPlayer.SendGameMessage("&c[RACE] &fCheating isnt ok :/");
-                return;
-            }
             if (player.svPlayer.CustomData.TryGetValue<double>($"enteredSector1", out double lapTime))
             {
                 DateTime now = DateTime.Now;
