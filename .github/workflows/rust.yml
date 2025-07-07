@@ -1,0 +1,27 @@
+name: Build Rust project
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions/setup-rust@v1
+      with:
+        rust-version: stable
+    - name: Build project in TrackServer
+      run: |
+        cd TrackServer
+        cargo build --release
+
+    - name: Upload binary artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: trackserver-binary
+        path: TrackServer/target/release/*.so
