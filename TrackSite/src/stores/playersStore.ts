@@ -2,13 +2,21 @@ import { defineStore } from 'pinia'
 import type { PlayerData, PosUpdateBody, WSMessage } from '@/types/playerType.ts'
 import { ref, type Ref } from 'vue'
 import axios from 'axios'
+import type { RaceInfo } from '@/types/raceType.ts'
 
 export const usePlayersStore = defineStore('players', () => {
-  const players: Ref<PlayerData[]> = ref([]);
+  const players: Ref<PlayerData[]> = ref([])
+  const raceInfo: Ref<RaceInfo> = ref({
+    DRS: false,
+    Session: "P 0",
+    SessionEndsAt: 0
+  });
   const connectToWS = async () => {
     try {
-      const response = await axios.get('http://135.181.216.103:14430/get_players')
+      let response = await axios.get('http://135.181.216.103:14430/get_players')
       players.value = response.data
+      response = await axios.get('http://135.181.216.103:14430/get_raceinfo')
+      raceInfo.value = response.data
     } catch (err) {
       console.error('Chujowa odpowiedź z serwera:', err)
     }
@@ -35,7 +43,7 @@ export const usePlayersStore = defineStore('players', () => {
         console.log('Player added:', msg.body)
       }
       if (msg.title === 'playerLeave') {
-        players.value = players.value.filter(player => player.PlayerName !== msg.body)
+        players.value = players.value.filter((player) => player.PlayerName !== msg.body)
       }
       if (msg.title === 'playerUpdate') {
         const data = msg.body as PlayerData
@@ -44,7 +52,10 @@ export const usePlayersStore = defineStore('players', () => {
           players.value[index] = data
         }
       }
+      if (msg.title === 'raceInfoUpdate') {
+        raceInfo.value = msg.body as RaceInfo
+      }
     }
   }
-  return {connectToWS, players}
+  return { connectToWS, players, raceInfo }
 })

@@ -87,10 +87,7 @@ function getPlayerStyle(player: PlayerData) {
   </div>
 </template>
 
-<style>
-body{
-  background: #111;
-}
+<style scoped>
 .map-container {
   position: fixed;
   top: 0;

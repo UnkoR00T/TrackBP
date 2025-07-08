@@ -15,11 +15,15 @@ players.connectToWS();
   <RouterView />
 </template>
 
-<style scoped>
+<style>
+body{
+  background: #111;
+  color: #fafafa;
+}
 nav{
   margin-top: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: start;
   gap: 25px;
 }
 nav>a{
