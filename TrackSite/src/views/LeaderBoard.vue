@@ -1,13 +1,41 @@
 <script setup lang="ts">
 import { usePlayersStore } from '@/stores/playersStore.ts'
-import { computed,  } from 'vue'
-import { formatTime } from '@/functions/time.ts'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { doubleToDateTime, formatTime } from '@/functions/time.ts'
 import {  bestsFn, type bestsType } from '@/functions/bests.ts'
 import type { PlayerData } from '@/types/playerType.ts'
 
 const playersStore = usePlayersStore();
+const sessionCountdown = ref('');
 
+function updateCountdown() {
+  const now = new Date().getTime();
+  const sessionEnd = doubleToDateTime(playersStore.raceInfo.SessionEndsAt).getTime();
 
+  const diff = sessionEnd - now;
+
+  if (diff <= 0) {
+    sessionCountdown.value = "Session ended";
+    return;
+  }
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  let toDisplay = ``;
+  if (hours > 0) toDisplay += `${hours}h`;
+  if (minutes > 0) toDisplay += ` ${minutes}m`;
+  if (seconds > 0) toDisplay += ` ${seconds}s`;
+  sessionCountdown.value = toDisplay;
+}
+let intervalId: number;
+onMounted(() => {
+  updateCountdown();
+  intervalId = setInterval(updateCountdown, 1000);
+});
+onUnmounted(() => {
+  clearInterval(intervalId);
+});
 const showDrivers = computed((): {filterd: PlayerData[], bests: bestsType} => {
   const filterd = playersStore.players.filter(x => x.CustomData.Data.driverNumber && x.CustomData.Data.driverColor);
   const bests = bestsFn(filterd);
@@ -74,21 +102,26 @@ const showDrivers = computed((): {filterd: PlayerData[], bests: bestsType} => {
           </div>
           <div class="personalBests">
             <div class="speedtrap" :style="{color: showDrivers.bests.fastest == player.PlayerId ? '#83018c' : '#fafafa'}">
-              {{player.PersonalBests.TimeTrap.toFixed(2) + "km/h"}}
+              <span v-if="player.PersonalBests.TimeTrap > 5">{{player.PersonalBests.TimeTrap.toFixed(2) + "km/h"}}</span>
+              <span v-else>---</span>
             </div>
             <div class="sectors">
               <div class="sector" id="sectorOne" :style="{color: showDrivers.bests.bestSectorOne == player.PlayerId ? '#83018c' : '#fafafa'}">
-                {{formatTime(player.PersonalBests.Sectors.One)}}
+                <span v-if="player.PersonalBests.Sectors.One < 5000">{{formatTime(player.PersonalBests.Sectors.One)}}</span>
+                <span v-else>---</span>
               </div>
               <div class="sector" id="sectorTwo" :style="{color: showDrivers.bests.bestSectorTwo == player.PlayerId ? '#83018c' : '#fafafa'}">
-                {{formatTime(player.PersonalBests.Sectors.Two)}}
+                <span v-if="player.PersonalBests.Sectors.Two < 5000">{{formatTime(player.PersonalBests.Sectors.Two)}}</span>
+                <span v-else>---</span>
               </div>
               <div class="sector" id="sectorThree" :style="{color: showDrivers.bests.bestSectorThree == player.PlayerId ? '#83018c' : '#fafafa'}">
-                {{formatTime(player.PersonalBests.Sectors.Three)}}
+                <span v-if="player.PersonalBests.Sectors.Three < 5000">{{formatTime(player.PersonalBests.Sectors.Three)}}</span>
+                <span v-else>---</span>
               </div>
             </div>
             <div class="laptime" :style="{color: showDrivers.bests.bestLap == player.PlayerId ? '#83018c' : '#fafafa'}">
-              {{formatTime(player.PersonalBests.LapTime)}}
+              <span v-if="player.PersonalBests.LapTime < 5000">{{formatTime(player.PersonalBests.LapTime)}}</span>
+              <span v-else>---</span>
             </div>
           </div>
         </div>
@@ -105,8 +138,8 @@ const showDrivers = computed((): {filterd: PlayerData[], bests: bestsType} => {
           {{playersStore.raceInfo.Session}}
         </div>
         <div class="raceSessionEndsAt">
-          <span>Session Ends At: </span>
-          {{playersStore.raceInfo.SessionEndsAt}}
+          <span>Session ends in: </span>
+          {{sessionCountdown}}
         </div>
         <div class="drs">
           <span>DRS Status:</span>

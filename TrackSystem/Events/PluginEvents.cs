@@ -105,6 +105,7 @@ namespace TrackSystem.Events
                 SectorController.SetLapTime(player, realTime);
                 PersonalBestController.UpdateLapTime(player, realTime);
             }
+            PersonalBestController.AddLap(player);
         }
 
         public IEnumerator hideDiff(ShPlayer p)

@@ -20,6 +20,7 @@ namespace TrackSystem.Types
             Three = 999999
         };
         public float TimeTrap { get; set; } = 0;
+        public float Laps { get; set; } = 0;
     }
 
     public class Sectors

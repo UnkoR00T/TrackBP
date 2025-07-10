@@ -117,6 +117,11 @@ namespace TrackSystem.Events
                         player.svPlayer.DestroyMenu(id);
                         SvManager.Instance.StartCoroutine(startRace());
                         break;
+                    case "cpb":
+                        PersonalBestController.Clear();
+                        player.svPlayer.DestroyMenu(id);
+                        player.svPlayer.SendGameMessage("&c[RACE] &fCleared");
+                        break;
 
                 }
             }
@@ -143,9 +148,11 @@ namespace TrackSystem.Events
                 try
                 {
                     int time = Int32.Parse(input);
-                    DateTime now = new DateTime();
-                    now.AddMinutes(time);
+                    Debug.Log(time);
+                    DateTime now = DateTime.Now.AddMinutes(time);
+                    Debug.Log(now);
                     double ends = Time.DateTimeToDouble(now);
+                    Debug.Log(ends);
                     RaceInfoModel raceInfo = RaceInfoController.Get();
                     raceInfo.SessionEndsAt = ends;
                     RaceInfoController.Update(raceInfo);

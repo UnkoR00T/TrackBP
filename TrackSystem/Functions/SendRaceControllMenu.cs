@@ -23,6 +23,7 @@ namespace TrackSystem.Functions
                     new LabelID("DRS Status: " + raceInfo.DRS, "cdrs"),
                     new LabelID("Session: " + raceInfo.Session, "css" ),
                     new LabelID("Session ends at: " + raceInfo.SessionEndsAt, "csea"),
+                    new LabelID("&cClear personal bests(MAKE BACKUP)", "cpb"),
                     new LabelID("Start race", "sr")
                 };
                 List<LabelID> actions = new List<LabelID>

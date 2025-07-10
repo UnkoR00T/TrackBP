@@ -9,5 +9,7 @@ function formatTime(seconds: number): string {
 
   return `${minutes}:${paddedSecs}.${paddedMillis}s`;
 }
-
-export {formatTime}
+function doubleToDateTime(secondsSinceEpoch: number): Date {
+  return new Date(secondsSinceEpoch * 1000); // JS żre milisekundy
+}
+export {formatTime, doubleToDateTime}
