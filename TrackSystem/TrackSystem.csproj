@@ -40,6 +40,7 @@
     <Compile Include="Events\Manager.cs" />
     <Compile Include="Events\Player.cs" />
     <Compile Include="Events\PluginEvents.cs" />
+    <Compile Include="Functions\SendRaceControllMenu.cs" />
     <Compile Include="Functions\SetPlayerColor.cs" />
     <Compile Include="Functions\SetPlayerNumber.cs" />
     <Compile Include="Functions\WSUtils.cs" />

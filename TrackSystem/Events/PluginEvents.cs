@@ -32,15 +32,11 @@ namespace TrackSystem.Events
                     return;
                 }
                 int sector = Int32.Parse(data);
-                player.svPlayer.SendGameMessage($"===== SECTOR {sector} =====");
-                player.svPlayer.SendGameMessage($"===== ENTERD: {nowTime} =====");
                 if (player.svPlayer.CustomData.TryGetValue<int>("lastSector", out int lastSector))
                 {
                     if (player.svPlayer.CustomData.TryGetValue<double>($"enteredSector{lastSector}", out double time))
                     {
                         double realTime = nowTime - time;
-                        player.svPlayer.SendGameMessage($"===== LAST: {time} =====");
-                        player.svPlayer.SendGameMessage($"===== DIFF: {realTime} =====");
                         PersonalBestModel best = PersonalBestController.GetPersonalBests(player);
                         if (sector == 1 && lastSector == 3)
                         {
@@ -70,7 +66,6 @@ namespace TrackSystem.Events
 
                 player.svPlayer.CustomData.Add<double>($"enteredSector{sector}", nowTime);
                 player.svPlayer.CustomData.Add<int>($"lastSector", sector);
-                player.svPlayer.SendGameMessage($"===== SAVED =====");
 
             }
         }
@@ -96,14 +91,8 @@ namespace TrackSystem.Events
                 DateTime now = DateTime.Now;
                 double nowTime = Time.DateTimeToDouble(now);
                 double realTime = nowTime - lapTime;
-                player.svPlayer.SendGameMessage($"===== LAP-TIME: {realTime} =====");
                 PersonalBestModel best = PersonalBestController.GetPersonalBests(player);
                 var sectorDiff = realTime - best.LapTime;
-
-
-                Console.WriteLine($"[DEBUG] realTime: {realTime}");
-                Console.WriteLine($"[DEBUG] best lapTime: {best.LapTime}");
-                Console.WriteLine($"[DEBUG] realTime - best.LapTime = {realTime - best.LapTime}");
 
                 if (sectorDiff >= -100)
                 {

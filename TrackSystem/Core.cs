@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using TrackSystem.DBControllers;
 using TrackSystem.Functions;
 
 namespace TrackSystem
@@ -22,8 +23,10 @@ namespace TrackSystem
             DB.Init();
             init_server();
             RustBridge.Init();
+            RaceInfoController.Init();
             CommandHandler.RegisterCommand("setnumber", new Action<ShPlayer, ShPlayer, int>(SetPlayerNumber.Exec), null, "admin");
             CommandHandler.RegisterCommand("setcolor", new Action<ShPlayer, ShPlayer, string>(SetPlayerColor.Exec), null, "admin");
+            CommandHandler.RegisterCommand("race", new Action<ShPlayer>(SendRaceControllMenu.Exec), null, "admin");
         }
     }
 }

@@ -24,14 +24,16 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', triggerResizeUpdate)
 })
 
-function unityToMapCoords(unityX: number, unityY: number, svgRect: DOMRect) {
-  const minX = -2011;
-  const maxX = 2295;
-  const minY = -749;
-  const maxY = 1381;
+function unityToMapCoords(unityX: number, unityZ: number, svgRect: DOMRect) {
 
-  const normalizedX = 1 - ((unityX - minX) / (maxX - minX));
-  const normalizedY = ((unityY - minY) / (maxY - minY));
+  const minX = -1226;
+  const maxX = 1236;
+  const minZ = -671;
+  const maxZ = 673;
+  const paddingX = 0.04;
+  let normalizedX = 1- (unityX - minX) / (maxX - minX);
+  normalizedX = paddingX + normalizedX * (1 - 2 * paddingX);
+  const normalizedY = 1- ((unityZ - minZ) / (maxZ - minZ));
 
   const pixelX = normalizedX * svgRect.width + svgRect.left;
   const pixelY = normalizedY * svgRect.height + svgRect.top;
@@ -41,13 +43,15 @@ function unityToMapCoords(unityX: number, unityY: number, svgRect: DOMRect) {
     y: Math.round(pixelY)
   };
 }
+
+
 function getPlayerStyle(player: PlayerData) {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   windowSizeTrigger.value;
   if (!mapSvg.value) return {};
 
   const rect = mapSvg.value.getBoundingClientRect();
-  const coords = unityToMapCoords(player.Pos.x, player.Pos.z, rect);
+  const coords = unityToMapCoords(player.Pos.z, player.Pos.x, rect);
 
   return {
     position: 'absolute',
@@ -58,7 +62,7 @@ function getPlayerStyle(player: PlayerData) {
     borderRadius: '50%',
     background: '#' + player.CustomData.Data.driverColor,
     zIndex: 2,
-    transform: 'translate(-10px, -10px)'
+    transform: 'translate(0, -15px)'
   };
 }
 </script>
