@@ -10,6 +10,7 @@ type PersonalBest = {
   PlayerName: string;
   Sectors: SectorTimes;
   TimeTrap: number;
+  Laps: number;
 };
 
 type CustomData = {

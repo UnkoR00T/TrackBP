@@ -81,11 +81,14 @@ const showDrivers = computed((): {filterd: PlayerData[], bests: bestsType} => {
               </div>
             </div>
             <div class="laptime">
-              Laptime
+              Laptime {{playersStore.raceInfo.Session == 'RACE' ? "" : "^"}}
+            </div>
+            <div class="laps">
+              Laps {{playersStore.raceInfo.Session == 'RACE' ? "^" : ""}}
             </div>
           </div>
         </div>
-        <div class="player" v-for="(player, i) in showDrivers.filterd.sort(x=> x.PersonalBests.LapTime)" :key="player.PlayerId">
+        <div class="player" v-for="(player, i) in playersStore.raceInfo.Session == 'RACE' ? [...showDrivers.filterd].sort((a, b) => b.PersonalBests.Laps - a.PersonalBests.Laps) : [...showDrivers.filterd].sort((a, b) => a.PersonalBests.LapTime - b.PersonalBests.LapTime)" :key="player.PlayerId">
           <div class="position">
             {{i + 1}}
           </div>
@@ -121,6 +124,10 @@ const showDrivers = computed((): {filterd: PlayerData[], bests: bestsType} => {
             </div>
             <div class="laptime" :style="{color: showDrivers.bests.bestLap == player.PlayerId ? '#83018c' : '#fafafa'}">
               <span v-if="player.PersonalBests.LapTime < 5000">{{formatTime(player.PersonalBests.LapTime)}}</span>
+              <span v-else>---</span>
+            </div>
+            <div class="laps" :style="{color: showDrivers.bests.laps == player.PlayerId ? '#83018c' : '#fafafa'}">
+              <span v-if="player.PersonalBests.LapTime < 5000">{{player.PersonalBests.Laps}}</span>
               <span v-else>---</span>
             </div>
           </div>

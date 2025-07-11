@@ -6,6 +6,7 @@ type bestsType = {
   bestSectorThree: number,
   bestLap: number,
   fastest: number,
+  laps: number,
 }
 
 function bestsFn(players: PlayerData[]): bestsType {
@@ -14,6 +15,7 @@ function bestsFn(players: PlayerData[]): bestsType {
   const sectorThree = [...players].sort((a, b) => a.PersonalBests.Sectors.Three - b.PersonalBests.Sectors.Three)[0].PlayerId;
   const bestLap = [...players].sort((a, b) => a.PersonalBests.LapTime - b.PersonalBests.LapTime)[0].PlayerId;
   const fastest = [...players].sort((a, b) => b.PersonalBests.TimeTrap - a.PersonalBests.TimeTrap)[0].PlayerId;
+  const laps = [...players].sort((a, b) => b.PersonalBests.Laps - a.PersonalBests.Laps)[0].PlayerId;
 
   return {
     bestSectorOne: sectorOne,
@@ -21,6 +23,7 @@ function bestsFn(players: PlayerData[]): bestsType {
     bestSectorThree: sectorThree,
     bestLap,
     fastest,
+    laps
   }
 }
 
