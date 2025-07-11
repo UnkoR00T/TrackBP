@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PlayerData } from '@/types/playerType.ts'
-import { computed, onBeforeUnmount, onMounted, type Ref, ref } from 'vue'
+import { computed, type CSSProperties, onBeforeUnmount, onMounted, type Ref, ref } from 'vue'
 import { usePlayersStore } from '@/stores/playersStore.ts'
 
 const playersStore = usePlayersStore();
@@ -36,7 +36,7 @@ function unityToMapCoords(unityX: number, unityZ: number, svgRect: DOMRect) {
   const normalizedY = 1- ((unityZ - minZ) / (maxZ - minZ));
 
   const pixelX = normalizedX * svgRect.width + svgRect.left;
-  const pixelY = normalizedY * svgRect.height + svgRect.top;
+  const pixelY = normalizedY * svgRect.height + svgRect.top - 30;
 
   return {
     x: Math.round(pixelX),
@@ -45,7 +45,7 @@ function unityToMapCoords(unityX: number, unityZ: number, svgRect: DOMRect) {
 }
 
 
-function getPlayerStyle(player: PlayerData) {
+function getPlayerStyle(player: PlayerData): CSSProperties {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   windowSizeTrigger.value;
   if (!mapSvg.value) return {};
@@ -55,12 +55,12 @@ function getPlayerStyle(player: PlayerData) {
 
   return {
     position: 'absolute',
-    left: coords.x + 'px',
-    top: coords.y + 'px',
+    left: `${coords.x}px`,
+    top: `${coords.y}px`,
     width: '30px',
     height: '30px',
     borderRadius: '50%',
-    background: '#' + player.CustomData.Data.driverColor,
+    background: `#${player.CustomData.Data.driverColor}`,
     zIndex: 2,
     transform: 'translate(0, -15px)'
   };
@@ -84,8 +84,7 @@ function getPlayerStyle(player: PlayerData) {
       v-for="player in showDrivers"
       :key="player.PlayerId"
       class="player"
-      :style="getPlayerStyle(player)"
-    >
+      :style="getPlayerStyle(player)">
       <span class="driver">{{ player.CustomData.Data.driverNumber }}</span>
     </div>
   </div>

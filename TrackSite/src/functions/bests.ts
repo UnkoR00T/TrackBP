@@ -1,17 +1,20 @@
 import type { PlayerData } from '@/types/playerType.ts'
+
 type bestsType = {
   bestSectorOne: number,
-    bestSectorTwo: number,
-    bestSectorThree: number,
-    bestLap: number,
-    fastest: number,
+  bestSectorTwo: number,
+  bestSectorThree: number,
+  bestLap: number,
+  fastest: number,
 }
+
 function bestsFn(players: PlayerData[]): bestsType {
-  const sectorOne = players.sort(x=>x.PersonalBests.Sectors.One)[0].PlayerId;
-  const sectorTwo = players.sort(x=>x.PersonalBests.Sectors.Two)[0].PlayerId;
-  const sectorThree = players.sort(x=>x.PersonalBests.Sectors.Three)[0].PlayerId;
-  const bestLap = players.sort(x=>x.PersonalBests.LapTime)[0].PlayerId;
-  const fastest = players.sort(x=>x.PersonalBests.TimeTrap)[0].PlayerId;
+  const sectorOne = [...players].sort((a, b) => a.PersonalBests.Sectors.One - b.PersonalBests.Sectors.One)[0].PlayerId;
+  const sectorTwo = [...players].sort((a, b) => a.PersonalBests.Sectors.Two - b.PersonalBests.Sectors.Two)[0].PlayerId;
+  const sectorThree = [...players].sort((a, b) => a.PersonalBests.Sectors.Three - b.PersonalBests.Sectors.Three)[0].PlayerId;
+  const bestLap = [...players].sort((a, b) => a.PersonalBests.LapTime - b.PersonalBests.LapTime)[0].PlayerId;
+  const fastest = [...players].sort((a, b) => b.PersonalBests.TimeTrap - a.PersonalBests.TimeTrap)[0].PlayerId;
+
   return {
     bestSectorOne: sectorOne,
     bestSectorTwo: sectorTwo,
@@ -21,4 +24,4 @@ function bestsFn(players: PlayerData[]): bestsType {
   }
 }
 
-export {bestsFn, type bestsType}
+export { bestsFn, type bestsType }

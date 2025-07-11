@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  frontend:
+    build: ./frontend
+    restart: always
+    networks:
+      - race-net
+networks:
+  race-net:
+    driver: bridge
