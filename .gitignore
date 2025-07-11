@@ -7,3 +7,4 @@
 /TrackSite/node_modules
 /TrackSite/.vscode
 /TrackSite/dist
+/ssl/*
