@@ -1,5 +1,6 @@
 ﻿using BrokeProtocol.API;
 using BrokeProtocol.Entities;
+using BrokeProtocol.Managers;
 using BrokeProtocol.Properties;
 using BrokeProtocol.Utility;
 using RSG;
@@ -104,10 +105,23 @@ namespace TrackSystem.Events
                 }
                 SectorController.SetLapTime(player, realTime);
                 PersonalBestController.UpdateLapTime(player, realTime);
+                player.svPlayer.StartCoroutine(PlaySoundForPlayer(player, "WaypointPassed", 4));
             }
             PersonalBestController.AddLap(player);
         }
+        public static IEnumerator PlaySoundForPlayer(ShPlayer player, string soundEntityName, float duration = 2f)
+        {
+            ShEntity soundEntity = player.svPlayer.svManager.AddNewEntity(
+                SceneManager.Instance.GetEntity(soundEntityName),
+                player.Place,
+                player.Position,
+                player.Rotation,
+                new BrokeProtocol.Collections.IDCollection<ShPlayer>() { player }
+            );
 
+            yield return new WaitForSecondsRealtime(duration);
+            soundEntity.Destroy();
+        }
         public IEnumerator hideDiff(ShPlayer p)
         {
             yield return new WaitForSeconds(3f);
@@ -132,6 +146,10 @@ namespace TrackSystem.Events
             if(physical is ShPlayer player && RaceInfoController.Get().DRS)
             {
                 player.svPlayer.VisualElementDisplay("DRSText", true);
+                if(player.curMount is ShVehicle v)
+                {
+                    ShVehicleAccessor.AddEngineStrength(v, 5000);
+                }
             }
         }
         [CustomTarget]
@@ -140,6 +158,10 @@ namespace TrackSystem.Events
             if (physical is ShPlayer player)
             {
                 player.svPlayer.VisualElementDisplay("DRSText", false);
+                if (player.curMount is ShVehicle v)
+                {
+                    ShVehicleAccessor.RemoveEngineStrength(v, 5000);
+                }
             }
         }
     }
