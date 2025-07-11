@@ -13,14 +13,14 @@ export const usePlayersStore = defineStore('players', () => {
   });
   const connectToWS = async () => {
     try {
-      let response = await axios.get('http://135.181.216.103:14430/get_players')
+      let response = await axios.get('https://raceapi.joltamp.pl/get_players')
       players.value = response.data
-      response = await axios.get('http://135.181.216.103:14430/get_raceinfo')
+      response = await axios.get('https://raceapi.joltamp.pl/get_raceinfo')
       raceInfo.value = response.data
     } catch (err) {
       console.error('Chujowa odpowiedź z serwera:', err)
     }
-    const ws = new WebSocket(`ws://135.181.216.103:14430/ws`)
+    const ws = new WebSocket(`wss://raceapi.joltamp.pl/ws`)
     ws.onmessage = (e: MessageEvent) => {
       let msg: WSMessage
       try {
