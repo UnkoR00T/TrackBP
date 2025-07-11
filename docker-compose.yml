@@ -1,7 +1,6 @@
-version: "3.9"
 services:
   frontend:
-    build: ./frontend
+    build: ./TrackSite
     restart: always
     networks:
       - race-net
