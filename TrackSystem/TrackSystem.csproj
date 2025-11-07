@@ -51,7 +51,6 @@
     <Compile Include="Types\RaceInfoModel.cs" />
     <Compile Include="Types\RustPlayer.cs" />
     <Compile Include="Types\SectorModel.cs" />
-    <Compile Include="Types\ShVehicleAccessor.cs" />
     <Compile Include="Types\TimeTrapModel.cs" />
     <Compile Include="Types\Vec3.cs" />
     <Compile Include="Types\WebSocketMessage.cs" />
@@ -83,6 +82,9 @@
     </Reference>
     <Reference Include="ENet-CSharp">
       <HintPath>..\..\Program Files (x86)\Steam2\steamapps\common\BROKE PROTOCOL\BrokeProtocol_Data\Managed\ENet-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="F1Utils">
+      <HintPath>..\..\..\Users\alexy\Downloads\F1Utils.dll</HintPath>
     </Reference>
     <Reference Include="LiteDB">
       <HintPath>..\..\Program Files (x86)\Steam2\steamapps\common\BROKE PROTOCOL\BrokeProtocol_Data\Managed\LiteDB.dll</HintPath>

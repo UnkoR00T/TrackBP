@@ -143,12 +143,16 @@ namespace TrackSystem.Events
         [CustomTarget]
         public void DRSZoneEnter(Serialized trigger, ShPhysical physical)
         {
-            if(physical is ShPlayer player && RaceInfoController.Get().DRS)
+            if (physical is ShPlayer player && RaceInfoController.Get().DRS)
             {
                 player.svPlayer.VisualElementDisplay("DRSText", true);
-                if(player.curMount is ShVehicle v)
+                if (player.curMount is ShVehicle v)
                 {
-                    ShVehicleAccessor.AddEngineStrength(v, 5000);
+                    v.svPhysical.SvForce((v.transform.forward * v.forwardVelocity) * 5);
+                    int originalSpeed = 20;
+                    int multiplier = 2;
+                    v.svMovable.SetMaxSpeed(originalSpeed * multiplier);
+                    F1Utils.
                 }
             }
         }
@@ -160,7 +164,7 @@ namespace TrackSystem.Events
                 player.svPlayer.VisualElementDisplay("DRSText", false);
                 if (player.curMount is ShVehicle v)
                 {
-                    ShVehicleAccessor.RemoveEngineStrength(v, 5000);
+                    
                 }
             }
         }
